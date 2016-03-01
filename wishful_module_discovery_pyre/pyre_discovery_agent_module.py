@@ -97,7 +97,7 @@ class PyreDiscoveryAgentModule(wishful_agent.AgentModule):
                     controller = json.loads(discoveryMsg)
                     self.controller_dl = str(controller["downlink"])
                     self.controller_ul = str(controller["uplink"])
-                    self.log.error("DL: {}, UL: {}".format(self.controller_dl, self.controller_ul))
+                    self.log.info("Discovered Controller DL-{}, UL-{}".format(self.controller_dl, self.controller_ul))
 
         n.stop()
 

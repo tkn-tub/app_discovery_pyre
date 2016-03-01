@@ -5,7 +5,7 @@ def readme():
         return f.read()
 
 setup(
-    name='wishful_module_pyre_discovery',
+    name='wishful_module_discovery_pyre',
     version='0.1.0',
     packages=find_packages(),
     url='http://www.wishful-project.eu/software',
