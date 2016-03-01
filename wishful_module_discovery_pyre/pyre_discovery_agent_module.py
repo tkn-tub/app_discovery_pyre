@@ -7,8 +7,7 @@ import sys
 import json
 import time
 
-import wishful_upis as upis
-import wishful_agent
+import wishful_framework
 
 __author__ = "Piotr Gawlowicz"
 __copyright__ = "Copyright (c) 2015, Technische Universitat Berlin"
@@ -16,8 +15,8 @@ __version__ = "0.1.0"
 __email__ = "{gawlowicz}@tkn.tu-berlin.de"
 
 
-@wishful_agent.build_module
-class PyreDiscoveryAgentModule(wishful_agent.AgentModule):
+@wishful_framework.build_module
+class PyreDiscoveryAgentModule(wishful_framework.WishfulModule):
     def __init__(self, groupName="wishful"):
         super(PyreDiscoveryAgentModule, self).__init__()
         self.log = logging.getLogger('pyre_discovery_module.main')
@@ -28,9 +27,9 @@ class PyreDiscoveryAgentModule(wishful_agent.AgentModule):
         self.ctx = zmq.Context()
 
 
-    @wishful_agent.loop()
-    @wishful_agent.on_start()
-    @wishful_agent.on_disconnected()
+    @wishful_framework.loop()
+    @wishful_framework.on_start()
+    @wishful_framework.on_disconnected()
     def start_discovery(self):
         self.log.debug("Start discovery procedure".format())
         self.running = True
@@ -43,8 +42,8 @@ class PyreDiscoveryAgentModule(wishful_agent.AgentModule):
             time.sleep(10)     
 
 
-    @wishful_agent.on_exit()
-    @wishful_agent.on_connected()
+    @wishful_framework.on_exit()
+    @wishful_framework.on_connected()
     def stop_discovery(self):
         self.log.debug("Stop discovery announcements".format())
         if self.running:
@@ -52,7 +51,7 @@ class PyreDiscoveryAgentModule(wishful_agent.AgentModule):
             self.discovery_pipe.send("$$STOP".encode('utf_8'))
 
 
-    @wishful_agent.discover_controller()
+    @wishful_framework.discover_controller()
     def get_controller(self):
         self.log.debug("Get Controller addresses: DL:{}, UL:{}".format(self.controller_dl, self.controller_ul))
 

@@ -7,8 +7,7 @@ import sys
 import json
 import time
 
-import wishful_upis as upis
-import wishful_controller
+import wishful_framework
 
 __author__ = "Piotr Gawlowicz"
 __copyright__ = "Copyright (c) 2015, Technische Universitat Berlin"
@@ -16,8 +15,8 @@ __version__ = "0.1.0"
 __email__ = "{gawlowicz}@tkn.tu-berlin.de"
 
 
-@wishful_controller.build_module
-class PyreDiscoveryControllerModule(wishful_controller.ControllerModule):
+@wishful_framework.build_module
+class PyreDiscoveryControllerModule(wishful_framework.WishfulModule):
     def __init__(self, downlink, uplink, groupName="wishful"):
         super(PyreDiscoveryControllerModule, self).__init__()
         self.log = logging.getLogger('pyre_discovery_module.main')
@@ -28,8 +27,8 @@ class PyreDiscoveryControllerModule(wishful_controller.ControllerModule):
         self.ctx = zmq.Context()
 
 
-    @wishful_controller.loop()
-    @wishful_controller.on_start()
+    @wishful_framework.loop()
+    @wishful_framework.on_start()
     def start_discovery_announcements(self):
         self.log.debug("Start discovery announcements".format())
         self.running = True
@@ -43,7 +42,7 @@ class PyreDiscoveryControllerModule(wishful_controller.ControllerModule):
             time.sleep(5)
 
 
-    @wishful_controller.on_exit()
+    @wishful_framework.on_exit()
     def stop_discovery_announcements(self):
         self.log.debug("Stop discovery announcements".format())
         if self.running:
