@@ -46,8 +46,9 @@ class PyreDiscoveryControllerModule(wishful_controller.ControllerModule):
     @wishful_controller.on_exit()
     def stop_discovery_announcements(self):
         self.log.debug("Stop discovery announcements".format())
-        self.running = False
-        self.discovery_pipe.send("$$STOP".encode('utf_8'))
+        if self.running:
+            self.running = False
+            self.discovery_pipe.send("$$STOP".encode('utf_8'))
 
 
     def discovery_task(self, ctx, pipe):

@@ -31,9 +31,12 @@ class PyreDiscoveryAgentModule(wishful_agent.AgentModule):
     @wishful_agent.loop()
     @wishful_agent.on_start()
     @wishful_agent.on_disconnected()
-    def start_discovery_announcements(self):
+    def start_discovery(self):
         self.log.debug("Start discovery procedure".format())
         self.running = True
+        self.controller_dl = None
+        self.controller_ul = None
+
         self.discovery_pipe = zhelper.zthread_fork(self.ctx, self.discovery_task)
 
         while self.running:
@@ -42,16 +45,24 @@ class PyreDiscoveryAgentModule(wishful_agent.AgentModule):
 
     @wishful_agent.on_exit()
     @wishful_agent.on_connected()
-    def stop_discovery_announcements(self):
+    def stop_discovery(self):
         self.log.debug("Stop discovery announcements".format())
-        self.running = False
-        self.discovery_pipe.send("$$STOP".encode('utf_8'))
+        if self.running:
+            self.running = False
+            self.discovery_pipe.send("$$STOP".encode('utf_8'))
 
 
     @wishful_agent.discover_controller()
     def get_controller(self):
         self.log.debug("Get Controller addresses: DL:{}, UL:{}".format(self.controller_dl, self.controller_ul))
-        return [self.controller_dl, self.controller_ul]
+
+        dl = self.controller_dl
+        up = self.controller_ul
+
+        #Available only once per discovery
+        self.controller_dl = None
+        self.controller_ul = None
+        return [dl, up]
 
 
     def discovery_task(self, ctx, pipe):
@@ -75,24 +86,24 @@ class PyreDiscoveryAgentModule(wishful_agent.AgentModule):
 
             if n.inbox in items and items[n.inbox] == zmq.POLLIN:
                 cmds = n.recv()
-                self.log.debug("NODE_MSG CONT:{}".format(cmds))
+                #self.log.error("NODE_MSG CONT:{}".format(cmds))
 
                 msg_type = cmds.pop(0)
                 peer_uuid_bytes = cmds.pop(0)
                 peer_uuid = uuid.UUID(bytes=peer_uuid_bytes)
 
-                self.log.debug("NODE_MSG TYPE: {}".format(msg_type))
-                self.log.debug("NODE_MSG PEER: {}".format(peer_uuid))
+                #self.log.debug("NODE_MSG TYPE: {}".format(msg_type))
+                #self.log.debug("NODE_MSG PEER: {}".format(peer_uuid))
 
                 if msg_type.decode('utf-8') == "SHOUT":
                     group_name = cmds.pop(0)
-                    self.log.debug("NODE_MSG GROUP: {}".format(group_name))
+                    #self.log.debug("NODE_MSG GROUP: {}".format(group_name))
 
                     group_name_2 = cmds.pop(0)
-                    self.log.debug("NODE_MSG GROUP_2: {}".format(group_name_2))
+                    #self.log.debug("NODE_MSG GROUP_2: {}".format(group_name_2))
 
                     discoveryMsg = cmds.pop(0)
-                    self.log.debug("Discovery Msg : {}".format(discoveryMsg))
+                    #self.log.debug("Discovery Msg : {}".format(discoveryMsg))
 
                     controller = json.loads(discoveryMsg)
                     self.controller_dl = str(controller["downlink"])
