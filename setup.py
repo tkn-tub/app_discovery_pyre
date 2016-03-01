@@ -15,6 +15,5 @@ setup(
     description='WiSHFUL PYRE Discovery Module',
     long_description='Implementation of a Dynamic Discovery Module.',
     keywords='wireless control',
-    dependency_links = ['https://github.com/zeromq/pyre/archive/master.zip'],
-    install_requires=[]
+    install_requires=['pyre>=0.3',],
 )
