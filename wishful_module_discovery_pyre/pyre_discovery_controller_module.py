@@ -20,6 +20,10 @@ class PyreDiscoveryControllerModule(wishful_framework.WishfulModule):
     def __init__(self, downlink, uplink, groupName="wishful"):
         super(PyreDiscoveryControllerModule, self).__init__()
         self.log = logging.getLogger('pyre_discovery_module.main')
+
+        pyreLogger = logging.getLogger('pyre')
+        pyreLogger.setLevel(logging.CRITICAL)
+
         self.running = False
         self.controller_dl = downlink
         self.controller_ul = uplink
