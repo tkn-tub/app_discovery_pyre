@@ -28,6 +28,7 @@ class PyreDiscoveryAgentModule(wishful_framework.WishfulModule):
         self.controller_dl = None
         self.controller_ul = None
         self.groupName = groupName
+        self.discovery_pipe = None
         self.ctx = zmq.Context()
 
 
