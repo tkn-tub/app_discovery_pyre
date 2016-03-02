@@ -56,6 +56,7 @@ class PyreDiscoveryControllerModule(wishful_framework.WishfulModule):
 
 
     def discovery_task(self, ctx, pipe):
+        self.log.debug("Pyre on iface : {}".format(self.iface))
         n = Pyre(self.groupName, sel_iface=self.iface)
         n.set_header("DISCOVERY_Header1","DISCOVERY_HEADER")
         n.join(self.groupName)
