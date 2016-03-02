@@ -17,7 +17,7 @@ __email__ = "{gawlowicz}@tkn.tu-berlin.de"
 
 @wishful_framework.build_module
 class PyreDiscoveryControllerModule(wishful_framework.WishfulModule):
-    def __init__(self, downlink, uplink, groupName="wishful"):
+    def __init__(self, downlink, uplink, iface, groupName="wishful"):
         super(PyreDiscoveryControllerModule, self).__init__()
         self.log = logging.getLogger('pyre_discovery_module.main')
 
@@ -25,6 +25,7 @@ class PyreDiscoveryControllerModule(wishful_framework.WishfulModule):
         pyreLogger.setLevel(logging.CRITICAL)
 
         self.running = False
+        self.iface = iface
         self.controller_dl = downlink
         self.controller_ul = uplink
         self.groupName = groupName
@@ -55,7 +56,7 @@ class PyreDiscoveryControllerModule(wishful_framework.WishfulModule):
 
 
     def discovery_task(self, ctx, pipe):
-        n = Pyre(self.groupName)
+        n = Pyre(self.groupName, sel_iface=self.iface)
         n.set_header("DISCOVERY_Header1","DISCOVERY_HEADER")
         n.join(self.groupName)
         n.start()
