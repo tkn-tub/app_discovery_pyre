@@ -32,7 +32,7 @@ class PyreDiscoveryControllerModule(wishful_framework.WishfulModule):
         self.ctx = zmq.Context()
 
 
-    @wishful_framework.loop()
+    @wishful_framework.run_in_thread()
     @wishful_framework.on_start()
     def start_discovery_announcements(self):
         self.log.debug("Start discovery announcements".format())

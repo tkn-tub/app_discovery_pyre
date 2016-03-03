@@ -33,7 +33,7 @@ class PyreDiscoveryAgentModule(wishful_framework.WishfulModule):
         self.ctx = zmq.Context()
 
 
-    @wishful_framework.loop()
+    @wishful_framework.run_in_thread()
     @wishful_framework.on_start()
     @wishful_framework.on_disconnected()
     def start_discovery(self):
