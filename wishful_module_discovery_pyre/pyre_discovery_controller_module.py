@@ -16,9 +16,9 @@ __email__ = "{gawlowicz}@tkn.tu-berlin.de"
 
 
 @wishful_framework.build_module
-class PyreDiscoveryControllerModule(wishful_framework.WishfulModule):
-    def __init__(self, downlink, uplink, iface, groupName="wishful"):
-        super(PyreDiscoveryControllerModule, self).__init__()
+class PyreDiscoveryControllerModule(wishful_framework.ControllerModule):
+    def __init__(self, controller, downlink, uplink, iface, groupName="wishful"):
+        super(PyreDiscoveryControllerModule, self).__init__(controller)
         self.log = logging.getLogger('pyre_discovery_module.main')
 
         pyreLogger = logging.getLogger('pyre')
