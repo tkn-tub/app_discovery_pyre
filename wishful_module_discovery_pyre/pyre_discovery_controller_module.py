@@ -44,7 +44,7 @@ class PyreDiscoveryControllerModule(wishful_framework.ControllerModule):
             
             msg = json.dumps({'downlink': self.controller_dl,'uplink': self.controller_ul})
             self.discovery_pipe.send(msg.encode('utf_8'))
-            time.sleep(5)
+            time.sleep(2)
 
 
     @wishful_framework.on_exit()

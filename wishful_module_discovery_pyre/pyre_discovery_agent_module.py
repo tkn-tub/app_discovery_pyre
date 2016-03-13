@@ -45,7 +45,7 @@ class PyreDiscoveryAgentModule(wishful_framework.WishfulModule):
         self.discovery_pipe = zhelper.zthread_fork(self.ctx, self.discovery_task)
 
         while self.running:
-            time.sleep(10)     
+            time.sleep(2)
 
 
     @wishful_framework.on_exit()
