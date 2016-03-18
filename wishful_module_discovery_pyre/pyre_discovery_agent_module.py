@@ -112,7 +112,7 @@ class PyreDiscoveryAgentModule(wishful_framework.WishfulModule):
                     discoveryMsg = cmds.pop(0)
                     #self.log.debug("Discovery Msg : {}".format(discoveryMsg))
 
-                    controller = json.loads(discoveryMsg)
+                    controller = json.loads(discoveryMsg.decode('utf-8'))
                     self.controller_dl = str(controller["downlink"])
                     self.controller_ul = str(controller["uplink"])
                     self.log.info("Discovered Controller DL-{}, UL-{}".format(self.controller_dl, self.controller_ul))
@@ -130,6 +130,6 @@ if __name__ == '__main__':
     try:
         pyreModule.start_discovery_announcements()
     except (KeyboardInterrupt, SystemExit):
-        print "Module exits"
+        print("Module exits")
     finally:
         pyreModule.stop_discovery_announcements()

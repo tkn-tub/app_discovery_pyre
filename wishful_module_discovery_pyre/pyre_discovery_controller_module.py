@@ -89,6 +89,6 @@ if __name__ == '__main__':
     try:
         pyreModule.start_discovery_announcements()
     except (KeyboardInterrupt, SystemExit):
-        print "Module exits"
+        print("Module exits")
     finally:
         pyreModule.stop_discovery_announcements()
