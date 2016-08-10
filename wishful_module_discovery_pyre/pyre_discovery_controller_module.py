@@ -1,9 +1,7 @@
-from pyre import Pyre 
-from pyre import zhelper 
-import zmq 
-import uuid
+from pyre import Pyre
+from pyre import zhelper
+import zmq
 import logging
-import sys
 import json
 import time
 
@@ -31,21 +29,22 @@ class PyreDiscoveryControllerModule(wishful_framework.ControllerModule):
         self.groupName = groupName
         self.ctx = zmq.Context()
 
-
     @wishful_framework.run_in_thread()
     @wishful_framework.on_start()
     def start_discovery_announcements(self):
         self.log.debug("Start discovery announcements".format())
         self.running = True
-        self.discovery_pipe = zhelper.zthread_fork(self.ctx, self.discovery_task)
-          
+        self.discovery_pipe = zhelper.zthread_fork(
+            self.ctx, self.discovery_task)
+
         while self.running:
-            self.log.debug("Discovery Announcements, Downlink={}, Uplink={}".format(self.controller_dl, self.controller_ul))
-            
-            msg = json.dumps({'downlink': self.controller_dl,'uplink': self.controller_ul})
+            self.log.debug("Discovery Announcements, Downlink={}, Uplink={}".format(
+                self.controller_dl, self.controller_ul))
+
+            msg = json.dumps({'downlink': self.controller_dl,
+                              'uplink': self.controller_ul})
             self.discovery_pipe.send(msg.encode('utf_8'))
             time.sleep(2)
-
 
     @wishful_framework.on_exit()
     def stop_discovery_announcements(self):
@@ -54,11 +53,10 @@ class PyreDiscoveryControllerModule(wishful_framework.ControllerModule):
             self.running = False
             self.discovery_pipe.send("$$STOP".encode('utf_8'))
 
-
     def discovery_task(self, ctx, pipe):
         self.log.debug("Pyre on iface : {}".format(self.iface))
         n = Pyre(self.groupName, sel_iface=self.iface)
-        n.set_header("DISCOVERY_Header1","DISCOVERY_HEADER")
+        n.set_header("DISCOVERY_Header1", "DISCOVERY_HEADER")
         n.join(self.groupName)
         n.start()
 
@@ -84,7 +82,8 @@ if __name__ == '__main__':
     logger = logging.getLogger("pyre")
     logging.basicConfig(level=logging.ERROR)
 
-    pyreModule = PyreDiscoveryControllerModule("tcp://127.0.0.1:8989","tcp://127.0.0.1:8990")
+    pyreModule = PyreDiscoveryControllerModule(
+        "tcp://127.0.0.1:8989", "tcp://127.0.0.1:8990")
 
     try:
         pyreModule.start_discovery_announcements()

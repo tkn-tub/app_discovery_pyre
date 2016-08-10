@@ -1,13 +1,13 @@
-from pyre import Pyre 
-from pyre import zhelper 
-import zmq 
+from pyre import Pyre
+from pyre import zhelper
+import zmq
 import uuid
 import logging
-import sys
 import json
 import time
 
 import wishful_framework
+import wishful_upis as upis
 
 __author__ = "Piotr Gawlowicz"
 __copyright__ = "Copyright (c) 2015, Technische Universitat Berlin"
@@ -23,7 +23,7 @@ class PyreDiscoveryAgentModule(wishful_framework.WishfulModule):
 
         pyreLogger = logging.getLogger('pyre')
         pyreLogger.setLevel(logging.CRITICAL)
-        
+
         self.running = False
         self.iface = iface
         self.controller_dl = None
@@ -31,7 +31,6 @@ class PyreDiscoveryAgentModule(wishful_framework.WishfulModule):
         self.groupName = groupName
         self.discovery_pipe = None
         self.ctx = zmq.Context()
-
 
     @wishful_framework.run_in_thread()
     @wishful_framework.on_start()
@@ -42,11 +41,11 @@ class PyreDiscoveryAgentModule(wishful_framework.WishfulModule):
         self.controller_dl = None
         self.controller_ul = None
 
-        self.discovery_pipe = zhelper.zthread_fork(self.ctx, self.discovery_task)
+        self.discovery_pipe = zhelper.zthread_fork(
+            self.ctx, self.discovery_task)
 
         while self.running:
             time.sleep(2)
-
 
     @wishful_framework.on_exit()
     @wishful_framework.on_connected()
@@ -56,25 +55,11 @@ class PyreDiscoveryAgentModule(wishful_framework.WishfulModule):
             self.running = False
             self.discovery_pipe.send("$$STOP".encode('utf_8'))
 
-
-    @wishful_framework.discover_controller()
-    def get_controller(self):
-        self.log.debug("Get Controller addresses: DL:{}, UL:{}".format(self.controller_dl, self.controller_ul))
-
-        dl = self.controller_dl
-        up = self.controller_ul
-
-        #Available only once per discovery
-        self.controller_dl = None
-        self.controller_ul = None
-        return [dl, up]
-
-
     def discovery_task(self, ctx, pipe):
         self.log.debug("Pyre on iface : {}".format(self.iface))
 
         n = Pyre(self.groupName, sel_iface=self.iface)
-        n.set_header("DISCOVERY_Header1","DISCOVERY_HEADER")
+        n.set_header("DISCOVERY_Header1", "DISCOVERY_HEADER")
         n.join(self.groupName)
         n.start()
 
@@ -93,29 +78,35 @@ class PyreDiscoveryAgentModule(wishful_framework.WishfulModule):
 
             if n.inbox in items and items[n.inbox] == zmq.POLLIN:
                 cmds = n.recv()
-                #self.log.error("NODE_MSG CONT:{}".format(cmds))
+                self.log.debug("NODE_MSG CONT:{}".format(cmds))
 
                 msg_type = cmds.pop(0)
                 peer_uuid_bytes = cmds.pop(0)
                 peer_uuid = uuid.UUID(bytes=peer_uuid_bytes)
 
-                #self.log.debug("NODE_MSG TYPE: {}".format(msg_type))
-                #self.log.debug("NODE_MSG PEER: {}".format(peer_uuid))
+                self.log.debug("NODE_MSG TYPE: {}".format(msg_type))
+                self.log.debug("NODE_MSG PEER: {}".format(peer_uuid))
 
                 if msg_type.decode('utf-8') == "SHOUT":
                     group_name = cmds.pop(0)
-                    #self.log.debug("NODE_MSG GROUP: {}".format(group_name))
+                    self.log.debug("NODE_MSG GROUP: {}".format(group_name))
 
                     group_name_2 = cmds.pop(0)
-                    #self.log.debug("NODE_MSG GROUP_2: {}".format(group_name_2))
+                    self.log.debug("NODE_MSG GROUP_2: {}".format(group_name_2))
 
                     discoveryMsg = cmds.pop(0)
-                    #self.log.debug("Discovery Msg : {}".format(discoveryMsg))
+                    self.log.debug("Discovery Msg : {}".format(discoveryMsg))
 
                     controller = json.loads(discoveryMsg.decode('utf-8'))
                     self.controller_dl = str(controller["downlink"])
                     self.controller_ul = str(controller["uplink"])
-                    self.log.info("Discovered Controller DL-{}, UL-{}".format(self.controller_dl, self.controller_ul))
+                    self.log.debug("Discovered Controller DL-{}, UL-{}"
+                                   .format(self.controller_dl,
+                                           self.controller_ul))
+                    self.send_event(
+                        upis.mgmt.ControllerDiscoveredEvent(
+                            self.controller_dl, self.controller_ul)
+                    )
 
         n.stop()
 
@@ -126,10 +117,3 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.ERROR)
 
     pyreModule = PyreDiscoveryAgentModule()
-
-    try:
-        pyreModule.start_discovery_announcements()
-    except (KeyboardInterrupt, SystemExit):
-        print("Module exits")
-    finally:
-        pyreModule.stop_discovery_announcements()
