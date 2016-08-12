@@ -109,11 +109,3 @@ class PyreDiscoveryAgentModule(wishful_framework.WishfulModule):
                     )
 
         n.stop()
-
-
-if __name__ == '__main__':
-    # Create a StreamHandler for debugging
-    logger = logging.getLogger("pyre")
-    logging.basicConfig(level=logging.ERROR)
-
-    pyreModule = PyreDiscoveryAgentModule()

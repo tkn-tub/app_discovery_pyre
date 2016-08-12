@@ -75,19 +75,3 @@ class PyreDiscoveryControllerModule(wishful_framework.ControllerModule):
                 n.shout(self.groupName, message)
 
         n.stop()
-
-
-if __name__ == '__main__':
-    # Create a StreamHandler for debugging
-    logger = logging.getLogger("pyre")
-    logging.basicConfig(level=logging.ERROR)
-
-    pyreModule = PyreDiscoveryControllerModule(
-        "tcp://127.0.0.1:8989", "tcp://127.0.0.1:8990")
-
-    try:
-        pyreModule.start_discovery_announcements()
-    except (KeyboardInterrupt, SystemExit):
-        print("Module exits")
-    finally:
-        pyreModule.stop_discovery_announcements()
