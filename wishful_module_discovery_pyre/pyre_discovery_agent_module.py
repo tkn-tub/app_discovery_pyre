@@ -45,6 +45,7 @@ class PyreDiscoveryAgentModule(wishful_framework.WishfulModule):
             self.ctx, self.discovery_task)
 
         while self.running:
+            # self.log.debug("Discovery procedure running".format())
             time.sleep(2)
 
     @wishful_framework.on_exit()
