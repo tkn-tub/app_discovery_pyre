@@ -35,8 +35,12 @@ class PyreDiscoveryAgentModule(wishful_framework.WishfulModule):
     @wishful_framework.run_in_thread()
     @wishful_framework.on_start()
     @wishful_framework.on_disconnected()
+    @wishful_framework.on_lost()
     def start_discovery(self):
+        if self.running:
+            return
         self.log.debug("Start discovery procedure".format())
+
         self.running = True
         self.controller_dl = None
         self.controller_ul = None
