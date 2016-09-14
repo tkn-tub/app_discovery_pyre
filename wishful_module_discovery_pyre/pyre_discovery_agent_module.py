@@ -6,7 +6,7 @@ import logging
 import json
 import time
 
-import wishful_framework
+from wishful_agent.core import wishful_module
 import wishful_upis as upis
 
 __author__ = "Piotr Gawlowicz"
@@ -15,8 +15,8 @@ __version__ = "0.1.0"
 __email__ = "{gawlowicz}@tkn.tu-berlin.de"
 
 
-@wishful_framework.build_module
-class PyreDiscoveryAgentModule(wishful_framework.WishfulModule):
+@wishful_module.build_module
+class PyreDiscoveryAgentModule(wishful_module.WishfulModule):
     def __init__(self, iface, groupName="wishful"):
         super(PyreDiscoveryAgentModule, self).__init__()
         self.log = logging.getLogger('pyre_discovery_module.main')
@@ -32,10 +32,10 @@ class PyreDiscoveryAgentModule(wishful_framework.WishfulModule):
         self.discovery_pipe = None
         self.ctx = zmq.Context()
 
-    @wishful_framework.run_in_thread()
-    @wishful_framework.on_start()
-    @wishful_framework.on_disconnected()
-    @wishful_framework.on_lost()
+    @wishful_module.run_in_thread()
+    @wishful_module.on_start()
+    @wishful_module.on_disconnected()
+    @wishful_module.on_lost()
     def start_discovery(self):
         if self.running:
             return
@@ -52,8 +52,8 @@ class PyreDiscoveryAgentModule(wishful_framework.WishfulModule):
             # self.log.debug("Discovery procedure running".format())
             time.sleep(2)
 
-    @wishful_framework.on_exit()
-    @wishful_framework.on_connected()
+    @wishful_module.on_exit()
+    @wishful_module.on_connected()
     def stop_discovery(self):
         self.log.debug("Stop discovery announcements".format())
         if self.running:
