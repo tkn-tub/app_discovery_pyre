@@ -15,8 +15,8 @@ __email__ = "{gawlowicz}@tkn.tu-berlin.de"
 
 @wishful_module.build_module
 class PyreDiscoveryControllerModule(wishful_module.WishfulModule):
-    def __init__(self, downlink,
-                 uplink, iface, groupName="wishful"):
+    def __init__(self, iface, groupName="wishful", downlink=None, sub=None,
+                 uplink=None, pub=None):
         super(PyreDiscoveryControllerModule, self).__init__()
         self.log = logging.getLogger('pyre_discovery_module.main')
 
@@ -25,8 +25,12 @@ class PyreDiscoveryControllerModule(wishful_module.WishfulModule):
 
         self.running = False
         self.iface = iface
-        self.controller_dl = downlink
-        self.controller_ul = uplink
+        self.sub = downlink
+        if not self.sub:
+            self.sub = sub
+        self.pub = uplink
+        if not self.pub:
+            self.pub = pub
         self.groupName = groupName
         self.ctx = zmq.Context()
 
@@ -40,11 +44,11 @@ class PyreDiscoveryControllerModule(wishful_module.WishfulModule):
 
         while self.running:
             self.log.debug("Discovery Announcements:"
-                           " Downlink={}, Uplink={}"
-                           .format(self.controller_dl, self.controller_ul))
+                           " SUB={}, PUB={}"
+                           .format(self.sub, self.pub))
 
-            msg = json.dumps({'downlink': self.controller_dl,
-                              'uplink': self.controller_ul})
+            msg = json.dumps({'downlink': self.sub,
+                              'uplink': self.pub})
             self.discovery_pipe.send(msg.encode('utf_8'))
             time.sleep(2)
 
