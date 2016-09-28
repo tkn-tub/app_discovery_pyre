@@ -35,7 +35,6 @@ class PyreDiscoveryAgentModule(wishful_module.WishfulModule):
     @wishful_module.run_in_thread()
     @wishful_module.on_start()
     @wishful_module.on_disconnected()
-    @wishful_module.on_lost()
     def start_discovery(self):
         if self.running:
             return
@@ -109,7 +108,7 @@ class PyreDiscoveryAgentModule(wishful_module.WishfulModule):
                                    .format(self.controller_dl,
                                            self.controller_ul))
                     self.send_event(
-                        upis.mgmt.ControllerDiscoveredEvent(
+                        upis.mgmt.BrokerDiscoveredEvent(
                             self.controller_dl, self.controller_ul)
                     )
 
