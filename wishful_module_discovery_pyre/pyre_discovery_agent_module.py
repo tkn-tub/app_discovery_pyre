@@ -7,7 +7,7 @@ import json
 import time
 
 from wishful_agent.core import wishful_module
-import wishful_upis as upis
+from wishful_agent.core import events
 
 __author__ = "Piotr Gawlowicz"
 __copyright__ = "Copyright (c) 2015, Technische Universitat Berlin"
@@ -108,7 +108,7 @@ class PyreDiscoveryAgentModule(wishful_module.WishfulModule):
                                    .format(self.controller_dl,
                                            self.controller_ul))
                     self.send_event(
-                        upis.mgmt.BrokerDiscoveredEvent(
+                        events.BrokerDiscoveredEvent(
                             self.controller_dl, self.controller_ul)
                     )
 
