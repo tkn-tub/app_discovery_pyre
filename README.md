@@ -1,9 +1,7 @@
-WiSHFUL Dynamic (Pyre) Discovery Module
+UniFlex Dynamic (Pyre) Discovery Application
 ============================
 
-This is a prototypic implementation of a wireless agent providing the Unified
-Programming Interfaces (UPIs) of the Wishful software platform for
-radio and network control.
+Discovery of peer nodes in LAN.
 
 ## Acknowledgement
 

@@ -6,8 +6,8 @@ import logging
 import json
 import time
 
-from wishful_agent.core import wishful_module
-from wishful_agent.core import events
+from uniflex.core import modules
+from uniflex.core import events
 
 __author__ = "Piotr Gawlowicz"
 __copyright__ = "Copyright (c) 2015, Technische Universitat Berlin"
@@ -15,9 +15,9 @@ __version__ = "0.1.0"
 __email__ = "{gawlowicz}@tkn.tu-berlin.de"
 
 
-@wishful_module.build_module
-class PyreDiscoveryAgentModule(wishful_module.WishfulModule):
-    def __init__(self, iface, groupName="wishful"):
+@modules.build_module
+class PyreDiscoveryAgentModule(modules.UniFlexModule):
+    def __init__(self, iface, groupName="uniflex"):
         super(PyreDiscoveryAgentModule, self).__init__()
         self.log = logging.getLogger('pyre_discovery_module.main')
 
@@ -32,9 +32,9 @@ class PyreDiscoveryAgentModule(wishful_module.WishfulModule):
         self.discovery_pipe = None
         self.ctx = zmq.Context()
 
-    @wishful_module.run_in_thread()
-    @wishful_module.on_start()
-    @wishful_module.on_disconnected()
+    @modules.run_in_thread()
+    @modules.on_start()
+    @modules.on_disconnected()
     def start_discovery(self):
         if self.running:
             return
@@ -51,8 +51,8 @@ class PyreDiscoveryAgentModule(wishful_module.WishfulModule):
             # self.log.debug("Discovery procedure running".format())
             time.sleep(2)
 
-    @wishful_module.on_exit()
-    @wishful_module.on_connected()
+    @modules.on_exit()
+    @modules.on_connected()
     def stop_discovery(self):
         self.log.debug("Stop discovery announcements".format())
         if self.running:
