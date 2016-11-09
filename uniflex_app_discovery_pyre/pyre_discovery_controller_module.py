@@ -13,11 +13,10 @@ __version__ = "0.1.0"
 __email__ = "{gawlowicz}@tkn.tu-berlin.de"
 
 
-@modules.build_module
-class PyreDiscoveryControllerModule(modules.UniFlexModule):
+class PyreDiscoveryMasterModule(modules.ControlApplication):
     def __init__(self, iface, groupName="uniflex", downlink=None, sub=None,
                  uplink=None, pub=None):
-        super(PyreDiscoveryControllerModule, self).__init__()
+        super(PyreDiscoveryMasterModule, self).__init__()
         self.log = logging.getLogger('pyre_discovery_module.main')
 
         pyreLogger = logging.getLogger('pyre')
