@@ -1,2 +1,2 @@
-from .pyre_discovery_agent_module import *
-from .pyre_discovery_controller_module import *
+from .pyre_discovery_slave_module import *
+from .pyre_discovery_master_module import *
