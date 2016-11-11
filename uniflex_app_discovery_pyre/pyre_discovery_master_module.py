@@ -1,5 +1,6 @@
 from pyre import Pyre
 from pyre import zhelper
+import threading
 import zmq
 import logging
 import json
@@ -33,14 +34,7 @@ class PyreDiscoveryMasterModule(modules.ControlApplication):
         self.groupName = groupName
         self.ctx = zmq.Context()
 
-    @modules.run_in_thread()
-    @modules.on_start()
-    def start_discovery_announcements(self):
-        self.log.debug("Start discovery announcements".format())
-        self.running = True
-        self.discovery_pipe = zhelper.zthread_fork(
-            self.ctx, self.discovery_task)
-
+    def _sending_announcements(self):
         while self.running:
             self.log.debug("Discovery Announcements:"
                            " SUB={}, PUB={}"
@@ -50,6 +44,18 @@ class PyreDiscoveryMasterModule(modules.ControlApplication):
                               'uplink': self.pub})
             self.discovery_pipe.send(msg.encode('utf_8'))
             time.sleep(2)
+
+    @modules.on_start()
+    def start_discovery_announcements(self):
+        self.log.debug("Start discovery announcements".format())
+        self.running = True
+        self.discovery_pipe = zhelper.zthread_fork(
+            self.ctx, self.discovery_task)
+
+        d = threading.Thread(target=self._sending_announcements)
+        d.setDaemon(True)
+        d.start()
+        return True
 
     @modules.on_exit()
     def stop_discovery_announcements(self):

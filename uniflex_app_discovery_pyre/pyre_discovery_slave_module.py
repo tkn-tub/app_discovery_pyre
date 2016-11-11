@@ -1,5 +1,6 @@
 from pyre import Pyre
 from pyre import zhelper
+import threading
 import zmq
 import uuid
 import logging
@@ -31,7 +32,11 @@ class PyreDiscoverySlaveModule(modules.ControlApplication):
         self.discovery_pipe = None
         self.ctx = zmq.Context()
 
-    @modules.run_in_thread()
+    def _receive_announcements(self):
+        while self.running:
+            # self.log.debug("Discovery procedure running".format())
+            time.sleep(2)
+
     @modules.on_start()
     @modules.on_disconnected()
     def start_discovery(self):
@@ -46,9 +51,10 @@ class PyreDiscoverySlaveModule(modules.ControlApplication):
         self.discovery_pipe = zhelper.zthread_fork(
             self.ctx, self.discovery_task)
 
-        while self.running:
-            # self.log.debug("Discovery procedure running".format())
-            time.sleep(2)
+        d = threading.Thread(target=self._receive_announcements)
+        d.setDaemon(True)
+        d.start()
+        return True
 
     @modules.on_exit()
     @modules.on_connected()
